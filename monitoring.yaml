@@ -8,6 +8,9 @@ services:
       - type: bind
         source: /volume1/docker/alloy/config.alloy
         target: /etc/alloy/config.alloy
+      - type: bind
+        source: /volume1/docker/alloy/snmp_auth.config.yml
+        target: /etc/alloy/snmp_auth.config.yml
     command: [
       "run",
       "--server.http.listen-addr=0.0.0.0:12345",
