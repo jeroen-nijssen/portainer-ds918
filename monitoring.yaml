@@ -1,7 +1,8 @@
 name: monitoring
-services:
+services: 
   alloy:
     image: grafana/alloy:v1.5.1
+    network_mode: bridge
     ports:
       - "12345:12345"
     volumes:
