@@ -25,3 +25,12 @@ services:
       - "59898:9898"
     environment:
       HOST: 192.168.178.30
+  watermeter:
+    image: ghcr.io/loafoe/prometheus-watermeter-exporter:latest
+    network_mode: bridge
+    ports:
+      - "59897:8880"
+    command: [
+      "-addr \"192.168.178.73\"",
+      "-listen \"0.0.0.0:8880\"",
+    ]
