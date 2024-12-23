@@ -18,3 +18,10 @@ services:
       "--stability.level=experimental",
       "/etc/alloy/config.alloy",
     ]
+  p1:
+    image: chriskies/homewizard-p1-prometheus:main
+    network_mode: bridge
+    ports:
+      - "59898:9898"
+    environment:
+      HOST: 192.168.178.30
