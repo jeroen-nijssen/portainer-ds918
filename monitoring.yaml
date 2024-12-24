@@ -81,26 +81,22 @@ services:
         mode: ingress
     command: -logtostderr -docker_only
     volumes:
-      - type: bind
-        source: /
-        target: /rootfs
-        read_only: true
-      - type: bind
-        source: /var/run
-        target: /var/run
-        read_only: true
-      - type: bind
-        source: /sys
-        target: /sys
-        read_only: true
-      - type: bind
-        source: /var/lib/docker
-        target: /var/lib/docker
-        read_only: true
-      - type: bind
-        source: /dev/disk
-        target: /dev/disk
-        read_only: true
+    - type: bind
+      source: /
+      target: /rootfs
+      read_only: true
+    - type: bind
+      source: /var/run
+      target: /var/run
+      read_only: true
+    - type: bind
+      source: /sys
+      target: /sys
+      read_only: true
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+      read_only: true
 
 networks:
   monitoring:
