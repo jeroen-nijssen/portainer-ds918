@@ -2,9 +2,17 @@ name: monitoring
 services: 
   alloy:
     image: grafana/alloy:v1.5.1
-    network_mode: bridge
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - monitoring
     ports:
-      - "12345:12345"
+      - target: 12345
+        published: 12345
+        protocol: tcp
+        mode: ingress
     volumes:
       - type: bind
         source: /volume1/docker/alloy/config.alloy
@@ -19,20 +27,87 @@ services:
       "/etc/alloy/config.alloy",
     ]
   p1:
-    image: chriskies/homewizard-p1-prometheus:main
-    network_mode: bridge
+    image: chriskies/homewizard-p1-prometheus@sha256:b233994ebd8f1c863df69590c9f7618ee60c374991cef12e4be004e9fed5eefe
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - monitoring
     ports:
-      - "59898:9898"
+      - target: 9898
+        published: 59898
+        protocol: tcp
+        mode: ingress
     environment:
       HOST: 192.168.178.30
   watermeter:
-    image: ghcr.io/loafoe/prometheus-watermeter-exporter:latest
-    network_mode: bridge
+    image: ghcr.io/loafoe/prometheus-watermeter-exporter:latest@sha256:3f77d726474e6cd459594ba1b5d37becfa85a0f244ee4ba1f67b0984acc44d57
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - monitoring
     ports:
-      - "59897:8880"
+      - target: 8880
+        published: 59897
+        protocol: tcp
+        mode: ingress
     entrypoint: ["/usr/bin/prometheus-watermeter-exporter"]
     command: [
       "--verbose",
       "--addr","http://192.168.178.73",
       "--listen", "0.0.0.0:8880"
     ]
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    deploy:
+      mode: global
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    networks:
+      - monitoring
+    ports:
+      - target: 8080
+        published: 59896
+        protocol: tcp
+        mode: ingress
+    command: -logtostderr -docker_only
+    volumes:
+      - type: bind
+        source: /
+        target: /rootfs
+        read_only: true
+      - type: bind
+        source: /var/run
+        target: /var/run
+        read_only: true
+      - type: bind
+        source: /sys
+        target: /sys
+        read_only: true
+      - type: bind
+        source: /var/lib/docker
+        target: /var/lib/docker
+        read_only: true
+      - type: bind
+        source: /dev/disk
+        target: /dev/disk
+        read_only: true
+
+networks:
+  monitoring:
+    name: monitoring
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.10.0/24"
+          ip_range: "192.168.10.0/24"
+          gateway: "192.168.10.1"
