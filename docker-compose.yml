@@ -1,0 +1,20 @@
+name: monitoring
+services: 
+  p1:
+    image: chriskies/homewizard-p1-prometheus:main
+    network_mode: bridge
+    ports:
+      - "59898:9898"
+    environment:
+      HOST: 192.168.178.30
+  watermeter:
+    image: ghcr.io/loafoe/prometheus-watermeter-exporter:latest
+    network_mode: bridge
+    ports:
+      - "59897:8880"
+    entrypoint: ["/usr/bin/prometheus-watermeter-exporter"]
+    command: [
+      "--verbose",
+      "--addr","http://192.168.178.73",
+      "--listen", "0.0.0.0:8880"
+    ]

@@ -30,7 +30,9 @@ services:
     network_mode: bridge
     ports:
       - "59897:8880"
+    entrypoint: ["/usr/bin/prometheus-watermeter-exporter"]
     command: [
-      "-addr \"192.168.178.73\"",
-      "-listen \"0.0.0.0:8880\"",
+      "--verbose",
+      "--addr","http://192.168.178.73",
+      "--listen", "0.0.0.0:8880"
     ]
