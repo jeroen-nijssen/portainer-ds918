@@ -20,6 +20,10 @@ services:
       - type: bind
         source: /volume1/docker/alloy/snmp_auth.config.yml
         target: /etc/alloy/snmp_auth.config.yml
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
     command: [
       "run",
       "--server.http.listen-addr=0.0.0.0:12345",
